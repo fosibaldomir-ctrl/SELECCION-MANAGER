@@ -15,7 +15,9 @@ import {
   FileText,
   ShieldCheck,
   Tv,
-  Database
+  Database,
+  BookOpen,
+  PlusCircle
 } from 'lucide-react';
 
 import { 
@@ -61,6 +63,8 @@ export default function App() {
     if (saved && saved !== 'dashboard') return saved;
     return 'scouting';
   });
+
+  const [trainingsAutoOpenModal, setTrainingsAutoOpenModal] = useState(false);
 
   // Mobile sidebar drawer
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -459,6 +463,8 @@ export default function App() {
             onUpdateTraining={handleUpdateTraining}
             onDeleteTraining={handleDeleteTraining}
             activeRole={activeRole}
+            autoOpenModal={trainingsAutoOpenModal}
+            onModalOpenFinished={() => setTrainingsAutoOpenModal(false)}
           />
         );
       case 'tactics':
@@ -507,11 +513,11 @@ export default function App() {
   // Sidebar link items
   const menuItems = [
     { id: 'scouting', label: 'Scouting', icon: <Award className="w-5 h-5" /> },
-    { id: 'trainings', label: 'Entrenamientos', icon: <Video className="w-5 h-5" /> },
+    { id: 'trainings', label: 'Biblioteca de Entrenos', icon: <Video className="w-5 h-5" /> },
     { id: 'tactics', label: 'Pizarra Táctica', icon: <Map className="w-5 h-5" /> },
     { id: 'injuries', label: 'Estado Médico', icon: <Activity className="w-5 h-5" /> },
     { id: 'calendar', label: 'Calendario y Agenda', icon: <Calendar className="w-5 h-5" /> },
-    { id: 'performance', label: 'Desarrollo Individual (PDP)', icon: <Target className="w-5 h-5" /> },
+    { id: 'performance', label: 'Desarrollo Individual (PDP)', icon: <Target className="w-5 h-5 animate-pulse text-emerald-400" /> },
   ];
 
   return (
@@ -555,6 +561,33 @@ export default function App() {
               );
             })}
           </nav>
+
+          {/* Quick Shortcuts Widget */}
+          <div className="bg-slate-950/40 border border-slate-850 p-3.5 rounded-2xl space-y-2 text-left">
+            <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-1 px-0.5">Accesos Rápidos</span>
+            
+            <button
+              onClick={() => {
+                setActiveTab('trainings');
+                setTrainingsAutoOpenModal(false);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 bg-slate-900/60 border border-slate-800 hover:bg-slate-850 hover:border-slate-750 text-slate-300 hover:text-white rounded-xl text-xs font-semibold tracking-wide transition-all cursor-pointer group"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
+              <span>Biblioteca Entrenos</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('trainings');
+                setTrainingsAutoOpenModal(true);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-350 rounded-xl text-xs font-bold tracking-wide transition-all cursor-pointer group"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+              <span>Programar Sesión</span>
+            </button>
+          </div>
         </div>
 
         {/* User Identity / Global Role Status */}
@@ -744,6 +777,35 @@ ALTER TABLE scout_players DISABLE ROW LEVEL SECURITY;`}
                 );
               })}
             </nav>
+
+            {/* Mobile shortcuts */}
+            <div className="bg-slate-900 border border-slate-850 p-4 rounded-2xl space-y-2.5 mt-2">
+              <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest block px-0.5">Accesos Rápidos</span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setActiveTab('trainings');
+                    setTrainingsAutoOpenModal(false);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-950 border border-slate-800 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Biblioteca</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('trainings');
+                    setTrainingsAutoOpenModal(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span>Programar</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* User badge mobile */}
@@ -767,17 +829,19 @@ ALTER TABLE scout_players DISABLE ROW LEVEL SECURITY;`}
       <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto" id="applet-viewport-workbench">
         
         {/* Top visual navigation path indicators / Clock ribbon */}
-        <div className="hidden sm:flex items-center justify-between mb-6 pointer-events-none select-none text-left">
+        <div className="hidden sm:flex items-center justify-between mb-6 text-left">
           
           <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
             <span>RFFPA</span>
             <span>/</span>
-            <span className="text-slate-400 capitalize">{activeTab}</span>
+            <span className="text-slate-200 capitalize font-bold">{activeTab === 'trainings' ? 'Biblioteca de Entrenos' : activeTab}</span>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-slate-500 text-xs text-right">
-            <Clock className="w-3.5 h-3.5 text-slate-600" />
-            <span>Zona Horaria Oficial: Madrid UTC+1</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 font-mono text-slate-500 text-[11px] text-right">
+              <Clock className="w-3.5 h-3.5 text-slate-600" />
+              <span>Madrid (UTC+1)</span>
+            </div>
           </div>
 
         </div>

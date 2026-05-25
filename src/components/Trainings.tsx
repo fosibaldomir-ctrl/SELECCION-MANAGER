@@ -19,6 +19,8 @@ interface TrainingsProps {
   onUpdateTraining: (session: TrainingSession) => void;
   onDeleteTraining: (id: string) => void;
   activeRole: UserSession;
+  autoOpenModal?: boolean;
+  onModalOpenFinished?: () => void;
 }
 
 export default function Trainings({
@@ -26,10 +28,21 @@ export default function Trainings({
   onAddTraining,
   onUpdateTraining,
   onDeleteTraining,
-  activeRole
+  activeRole,
+  autoOpenModal,
+  onModalOpenFinished
 }: TrainingsProps) {
   const [selectedTrainingId, setSelectedTrainingId] = useState<string>(trainings[0]?.id || '');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (autoOpenModal) {
+      setIsModalOpen(true);
+      if (onModalOpenFinished) {
+        onModalOpenFinished();
+      }
+    }
+  }, [autoOpenModal, onModalOpenFinished]);
   const [filterCategory, setFilterCategory] = useState<'ALL' | TrainingCategory>('ALL');
 
   // Form states
@@ -123,11 +136,11 @@ export default function Trainings({
     <div className="space-y-6" id="training-management-section">
       
       {/* Upper header action banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-850 pb-5">
+        <div className="text-left">
           <h2 className="text-xl font-bold font-sans text-white flex items-center gap-2">
-            <Video className="w-5 h-5 text-blue-400" />
-            <span>Biblioteca y Planificación de Entrenamientos</span>
+            <Video className="w-5 h-5 text-emerald-400" />
+            <span>Biblioteca de Entrenamientos y Planificación</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             Diseña entrenamientos tácticos, técnicos, físicos y preparatorios de estrategia. Adjunta vídeo-ejercicios interactivos de YouTube para el plantel.
@@ -135,20 +148,39 @@ export default function Trainings({
         </div>
 
         <div>
-          {canManageWorkouts ? (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 hover:bg-blue-600 font-bold text-slate-950 text-xs rounded-xl shadow-lg transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Programar Sesión</span>
-            </button>
-          ) : (
+          {!canManageWorkouts && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 text-xs font-mono">
               <Lock className="w-3.5 h-3.5 text-slate-500" />
               <span>Planes de Solo Lectura ({activeRole.role.toUpperCase()})</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Main categories / segments directly inside the Workout Library section */}
+      <div className="bg-slate-900 border border-slate-850 p-2 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-left">
+        <div className="flex items-center gap-2 px-2 text-slate-400 font-mono text-xs font-bold uppercase tracking-wider">
+          <Tag className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span>Módulos de la Biblioteca:</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-1.5">
+          {['ALL', 'Táctico', 'Técnico', 'Físico', 'Estrategia'].map((cat) => {
+            const isActive = filterCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat as any)}
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer border ${
+                  isActive
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 border-emerald-400 font-black shadow-lg shadow-emerald-500/10'
+                    : 'bg-slate-950 text-slate-450 hover:text-white border-slate-850 hover:border-slate-800'
+                }`}
+              >
+                {cat === 'ALL' ? 'Todos los Entrenos' : cat}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -158,26 +190,6 @@ export default function Trainings({
         {/* Left Side: Sessions Directory */}
         <div className="lg:col-span-5 space-y-4">
           
-          {/* Quick category pill filters */}
-          <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">Filtrar:</span>
-            <div className="flex gap-1">
-              {['ALL', 'Táctico', 'Técnico', 'Físico', 'Estrategia'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilterCategory(cat as any)}
-                  className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${
-                    filterCategory === cat
-                      ? 'bg-blue-500 text-slate-950'
-                      : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  {cat === 'ALL' ? 'Todos' : cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* List content list view */}
           <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2" id="training-sessions-list">
             {filteredTrainings.map((session) => {
