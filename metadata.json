@@ -1,0 +1,6 @@
+{
+  "name": "Selección Manager",
+  "description": "Plataforma premium para la gestión integral de scouting, entrenamientos, táctica, medicina y rendimiento de una Selección de Fútbol.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

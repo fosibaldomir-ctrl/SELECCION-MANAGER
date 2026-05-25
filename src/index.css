@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  --color-slate-950: #0a0b0d;
+  --color-slate-900: #111318;
+  --color-slate-850: #1c1f26;
+  --color-slate-800: #2d2d2d;
+  
+  --color-emerald-500: #22c55e;
+  --color-emerald-600: #16a34a;
+  --color-emerald-400: #4ade80;
+}
+
+body {
+  background-color: #0a0b0d;
+  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  margin: 0;
+}
+
+/* Glass card layout from the Design HTML */
+.glass-card {
+  background: rgba(22, 24, 29, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Base style mapping for items styled with glass-card */
+.glass-panel {
+  background-color: rgba(22, 24, 29, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Pitch styling for tactical boards */
+.pitch-bg {
+  background-color: #1a2e1a;
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, rgba(255,255,255,0.02) 10%, rgba(255,255,255,0.02) 20%);
+}
+
+.player-dot {
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Active tab style */
+.active-tab {
+  border-bottom: 2px solid #22c55e;
+  color: #22c55e;
+}
